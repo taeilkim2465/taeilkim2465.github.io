@@ -27,4 +27,14 @@ document.querySelector('#copy-citation').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(content.textContent); status.textContent = 'Copied!'; }
   catch { const range = document.createRange(); range.selectNodeContents(content); const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range); status.textContent = 'Select and copy the citation above.'; }
 });
+document.querySelectorAll('.paper-image').forEach(link => {
+  link.addEventListener('click', event => {
+    if (!link.href.startsWith('data:application/pdf;base64,')) return;
+    event.preventDefault();
+    const bytes = Uint8Array.from(atob(link.href.split(',')[1]), c => c.charCodeAt(0));
+    const pdfURL = URL.createObjectURL(new Blob([bytes], {type: 'application/pdf'}));
+    window.open(pdfURL, '_blank', 'noopener');
+    setTimeout(() => URL.revokeObjectURL(pdfURL), 60000);
+  });
+});
 </script></body></html>
